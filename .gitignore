@@ -1,0 +1,9 @@
+node_modules/
+out/
+dist/
+release/
+.pio/
+firmware/ESP32-Paxcounter/.git/
+firmware/ESP32-Paxcounter/.pio/
+resources/platformio-core/
+*.log
