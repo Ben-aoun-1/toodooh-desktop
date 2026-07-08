@@ -1,0 +1,13 @@
+{
+  "name": "Toodooh PAX Counter firmware",
+  "base": "ESP32-Paxcounter v3.6.3 (33fe653) + toodooh patches 0001,0002",
+  "board": "LilyGO TTGO T3 LoRa32 v1.6.1 (ESP32-PICO-D4, 4MB)",
+  "chip": "esp32",
+  "flashBaud": 460800,
+  "files": [
+    { "address": "0x1000",  "path": "bootloader.bin" },
+    { "address": "0x8000",  "path": "partitions.bin" },
+    { "address": "0xe000",  "path": "boot_app0.bin" },
+    { "address": "0x10000", "path": "firmware.bin" }
+  ]
+}
