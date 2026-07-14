@@ -1,0 +1,10 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(timeout 60 du -sh \"c:/Users/Med amine ben aoun/.platformio/penv\")",
+      "Bash(timeout 120 du -sh \"c:/Users/Med amine ben aoun/.platformio/packages\")",
+      "Bash(timeout 60 du -sh \"c:/Users/Med amine ben aoun/.platformio/platforms\" \"c:/Users/Med amine ben aoun/.platformio/python3\")",
+      "Bash(timeout 60 du -sh \"c:/Users/Med amine ben aoun/.platformio/packages/\"*)"
+    ]
+  }
+}
