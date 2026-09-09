@@ -17,6 +17,21 @@ async function resetIntoApp(port) {
   await setSignals(port, { dtr: false, rts: false })
 }
 
+// Build the provisioning frame: SET_WIFI<TAB>ssid<TAB>pass[<TAB>agent]<LF>.
+// Tabs delimit (not spaces), so every field may contain spaces. An OPEN network
+// (no password) is carried as an EMPTY pass field — the firmware parses by tab
+// index (mqttclient.cpp wifi_provisioning_task), so "SET_WIFI\tssid\t\tagent"
+// stores pass="" and the device associates with authmode OPEN.
+// Tabs/CR/LF are stripped from the fields: one of them inside a value would
+// shift every field that follows it.
+export function buildSetWifiLine(ssid, pass, agent) {
+  const clean = (v) => String(v ?? '').replace(/[\t\r\n]/g, '')
+  const fields = [clean(ssid), clean(pass)]
+  const a = clean(agent)
+  if (a) fields.push(a)
+  return `SET_WIFI\t${fields.join('\t')}\n`
+}
+
 // Open `comPort`, reboot into the freshly-flashed app, push WiFi credentials
 // (SET_WIFI, tab-delimited so SSID/pass may contain spaces), and watch the
 // serial log to confirm the device joins WiFi and reaches the MQTT broker.
@@ -55,13 +70,20 @@ export async function provisionWifi(comPort, ssid, pass, agent, {
     port.on('open', async () => {
       try {
         onLog('Rebooting device into firmware...')
-        await resetIntoApp(port)
+        // A port that refuses DTR/RTS (some bridges/virtual ports) is not fatal:
+        // the board may already be running the app, so still send the frame.
+        try {
+          await resetIntoApp(port)
+        } catch (e) {
+          onLog(`Warning: could not pulse reset (${e.message}); continuing.`)
+        }
         await sleep(2500)
-        onLog(`Provisioning WiFi "${ssid}"${agent ? ` (agent ${agent})` : ''}...`)
-        // SET_WIFI<TAB>ssid<TAB>pass[<TAB>agent] — tabs allow spaces in fields.
-        const fields = [ssid, pass]
-        if (agent) fields.push(agent)
-        port.write(`SET_WIFI\t${fields.join('\t')}\n`)
+        const openNet = !String(pass ?? '')
+        onLog(
+          `Provisioning WiFi "${ssid}"${openNet ? ' (open network, no password)' : ''}` +
+          `${agent ? ` (agent ${agent})` : ''}...`
+        )
+        port.write(buildSetWifiLine(ssid, pass, agent))
       } catch (e) {
         reject(e)
       }

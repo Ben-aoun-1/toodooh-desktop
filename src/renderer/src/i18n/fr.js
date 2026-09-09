@@ -12,6 +12,9 @@ export const t = {
     ssidHint: 'Réseau WiFi 2,4 GHz uniquement',
     pass: 'Mot de passe WiFi',
     passPlaceholder: 'Mot de passe du réseau',
+    passPlaceholderOpen: 'Aucun mot de passe (réseau ouvert)',
+    openNetwork: 'Réseau ouvert (sans mot de passe)',
+    openNetworkHint: 'À cocher lorsque le réseau WiFi ne demande aucun mot de passe.',
     agent: 'Code agent',
     agentPlaceholder: 'Ex. AGENT-007',
     agentHint: 'Identifie l’agent qui installe ce compteur (envoyé au serveur).',
@@ -25,6 +28,7 @@ export const t = {
   },
   alerts: {
     needSsid: 'Veuillez saisir le nom du réseau WiFi (SSID).',
+    needPass: 'Veuillez saisir le mot de passe WiFi, ou cocher « Réseau ouvert (sans mot de passe) ».',
     needAgent: 'Veuillez saisir le code agent.',
     needPort: 'Veuillez sélectionner un port COM.',
     noBoard: 'Aucune carte détectée. Branchez la carte en USB.',

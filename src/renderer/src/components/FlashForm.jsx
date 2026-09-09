@@ -5,7 +5,7 @@ import { usePorts } from '../hooks/usePorts'
 import { useFlash } from '../hooks/useFlash'
 import { t } from '../i18n/fr'
 
-const DEFAULTS = { ssid: '', pass: '', agent: '', comPort: '' }
+const DEFAULTS = { ssid: '', pass: '', agent: '', comPort: '', openNetwork: false }
 
 export default function FlashForm({ firmware }) {
   const [config, setConfig] = useState(DEFAULTS)
@@ -21,14 +21,22 @@ export default function FlashForm({ firmware }) {
     setConfig((prev) => ({ ...prev, [field]: value }))
   }
 
+  // Open network = an EMPTY password on the wire. It is an explicit checkbox and
+  // not just a blank field, so a forgotten password can't silently be sent as one.
+  const toggleOpenNetwork = (e) => {
+    const openNetwork = e.target.checked
+    setConfig((prev) => ({ ...prev, openNetwork, pass: openNetwork ? '' : prev.pass }))
+  }
+
   const handleFlash = async () => {
     if (!config.ssid.trim()) return alert(t.alerts.needSsid)
+    if (!config.openNetwork && !config.pass) return alert(t.alerts.needPass)
     if (!config.agent.trim()) return alert(t.alerts.needAgent)
     if (!config.comPort) return alert(t.alerts.needPort)
     await startFlash({
       comPort: config.comPort,
       ssid: config.ssid,
-      pass: config.pass,
+      pass: config.openNetwork ? '' : config.pass,
       agent: config.agent.trim(),
     })
   }
@@ -57,10 +65,20 @@ export default function FlashForm({ firmware }) {
             <input
               className="tf-input"
               type="password"
-              value={config.pass}
+              value={config.openNetwork ? '' : config.pass}
               onChange={handleChange('pass')}
-              placeholder={t.form.passPlaceholder}
+              placeholder={config.openNetwork ? t.form.passPlaceholderOpen : t.form.passPlaceholder}
+              disabled={config.openNetwork}
             />
+            <label className="tf-check">
+              <input
+                type="checkbox"
+                checked={config.openNetwork}
+                onChange={toggleOpenNetwork}
+              />
+              <span>{t.form.openNetwork}</span>
+            </label>
+            <span className="tf-hint">{t.form.openNetworkHint}</span>
           </div>
 
           <div className="tf-field">
