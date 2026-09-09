@@ -38,8 +38,13 @@ Redémarrez l'ordinateur si Windows le demande.
    (il affiche « — ESP32 (CH9102) »).
 3. Saisissez le **Nom du réseau WiFi (SSID)** et le **Mot de passe WiFi**.
    ⚠️ Réseau **2,4 GHz uniquement** (l'ESP32 ne gère pas le 5 GHz).
-4. Cliquez sur **Flasher**.
-5. Suivez les étapes :
+   → Si le réseau **n'a aucun mot de passe** (réseau ouvert), cochez
+   **« Réseau ouvert (sans mot de passe) »** : le champ mot de passe se vide
+   et se désactive.
+4. Saisissez votre **Code agent** (ex. `AGENT-007`) : il identifie l'agent qui
+   installe le compteur et il est envoyé à la plateforme.
+5. Cliquez sur **Flasher**.
+6. Suivez les étapes :
    **Flashage → Configuration WiFi → Connexion → Appareil en ligne ✓**
 
 Quand « Appareil en ligne ✓ » s'affiche, la carte est flashée, connectée au
@@ -53,6 +58,7 @@ WiFi et visible sur la plateforme.
 |---|---|---|
 | Aucun port COM dans la liste | Pilote CH9102 absent | Installer le pilote (section 1), rebrancher la carte |
 | « Mot de passe WiFi refusé » | Mauvais mot de passe WiFi | Vérifier le mot de passe et réessayer |
+| « Mot de passe WiFi refusé » sur un réseau **sans** mot de passe | Case « Réseau ouvert » non cochée | Cocher « Réseau ouvert (sans mot de passe) » et reflasher |
 | Reste sur « Connexion », n'arrive pas « En ligne » | Réseau sans accès Internet, ou réseau 5 GHz | Utiliser un réseau 2,4 GHz avec accès Internet |
 | « Windows a protégé votre PC » | Application non signée | Informations complémentaires → Exécuter quand même |
 
