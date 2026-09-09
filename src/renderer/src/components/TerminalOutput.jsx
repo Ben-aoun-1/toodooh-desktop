@@ -1,4 +1,5 @@
 import React, { useRef, useEffect } from 'react'
+import { t } from '../i18n/fr'
 
 export default function TerminalOutput({ lines }) {
   const containerRef = useRef(null)
@@ -11,11 +12,11 @@ export default function TerminalOutput({ lines }) {
 
   return (
     <div className="tf-terminal">
-      <div className="tf-terminal__header">Build Output</div>
+      <div className="tf-terminal__header">{t.terminal.title}</div>
       <div className="tf-terminal__body" ref={containerRef}>
         {lines.length === 0 ? (
           <span className="tf-terminal__placeholder">
-            Build output will appear here...
+            {t.terminal.placeholder}
           </span>
         ) : (
           lines.map((line, i) => (

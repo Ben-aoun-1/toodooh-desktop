@@ -57,6 +57,10 @@ export const t = {
     wifiOnlyBody: "L'appareil a rejoint le réseau mais n'a pas atteint le serveur. Réessayez ou vérifiez le serveur.",
     errorTitle: 'Échec',
   },
+  terminal: {
+    title: 'Journal',
+    placeholder: 'Le déroulement du flashage s’affichera ici…',
+  },
   serial: {
     select: 'Sélectionner un port…',
     baud: '115200 bauds',
