@@ -12,6 +12,9 @@ export const t = {
     ssidHint: 'Réseau WiFi 2,4 GHz uniquement',
     pass: 'Mot de passe WiFi',
     passPlaceholder: 'Mot de passe du réseau',
+    passPlaceholderOpen: 'Aucun mot de passe (réseau ouvert)',
+    openNetwork: 'Réseau ouvert (sans mot de passe)',
+    openNetworkHint: 'À cocher lorsque le réseau WiFi ne demande aucun mot de passe.',
     agent: 'Code agent',
     agentPlaceholder: 'Ex. AGENT-007',
     agentHint: 'Identifie l’agent qui installe ce compteur (envoyé au serveur).',
@@ -25,6 +28,7 @@ export const t = {
   },
   alerts: {
     needSsid: 'Veuillez saisir le nom du réseau WiFi (SSID).',
+    needPass: 'Veuillez saisir le mot de passe WiFi, ou cocher « Réseau ouvert (sans mot de passe) ».',
     needAgent: 'Veuillez saisir le code agent.',
     needPort: 'Veuillez sélectionner un port COM.',
     noBoard: 'Aucune carte détectée. Branchez la carte en USB.',
@@ -32,7 +36,7 @@ export const t = {
   steps: {
     flashing: 'Flashage',
     provisioning: 'Configuration WiFi',
-    connecting: 'Connexion',
+    connecting: 'Analyse puis connexion (~2 min)',
     online: 'En ligne',
   },
   status: {
@@ -45,6 +49,8 @@ export const t = {
     error: 'Échec',
     wifiAuth: 'Mot de passe WiFi refusé.',
     noConnect: 'Connexion WiFi impossible. Vérifiez le réseau et réessayez.',
+    wifiNoIp: "La carte a rejoint le WiFi (mot de passe accepté), mais le routeur ne lui a attribué aucune adresse IP. Vérifiez sur le routeur le filtrage d'adresses MAC, la limite d'appareils ou une page de connexion, ou essayez avec un partage de connexion.",
+    notSaved: "La carte n'a pas confirmé la réception des identifiants WiFi. Débranchez-la, rebranchez-la et réessayez.",
   },
   result: {
     onlineTitle: 'Appareil en ligne ✓',
@@ -52,6 +58,10 @@ export const t = {
     wifiOnlyTitle: 'WiFi connecté',
     wifiOnlyBody: "L'appareil a rejoint le réseau mais n'a pas atteint le serveur. Réessayez ou vérifiez le serveur.",
     errorTitle: 'Échec',
+  },
+  terminal: {
+    title: 'Journal',
+    placeholder: 'Le déroulement du flashage s’affichera ici…',
   },
   serial: {
     select: 'Sélectionner un port…',

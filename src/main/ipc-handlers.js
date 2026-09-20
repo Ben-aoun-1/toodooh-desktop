@@ -1,7 +1,7 @@
 import { BrowserWindow } from 'electron'
 import { listPorts, openSerialMonitor, closeSerialMonitor } from './serial-manager'
 import { flashFirmware, getManifest } from './flasher'
-import { provisionWifi } from './provision'
+import { provisionWifi, classifyProvisioning } from './provision'
 
 export function registerIpcHandlers(ipcMain) {
   ipcMain.handle('get-ports', async () => {
@@ -32,22 +32,14 @@ export function registerIpcHandlers(ipcMain) {
       })
 
       progress({ phase: 'provisioning' })
-      const res = await provisionWifi(comPort, ssid, pass, agent, { onLog: log })
+      const res = await provisionWifi(comPort, ssid, pass, agent, {
+        onLog: log,
+        onPhase: (phase) => progress({ phase }),
+      })
 
-      if (res.mqttConnected) {
-        progress({ phase: 'online' })
-        return { success: true, ...res }
-      }
-      if (res.wifiConnected) {
-        progress({ phase: 'wifi-only' })
-        return { success: true, online: false, ...res }
-      }
-      progress({ phase: 'error' })
-      return {
-        success: false,
-        ...res,
-        error: res.authFail ? 'wifi-auth' : 'no-connect',
-      }
+      const { phase, ...outcome } = classifyProvisioning(res)
+      progress({ phase })
+      return { ...res, ...outcome }
     } catch (err) {
       progress({ phase: 'error' })
       return { success: false, error: err.message }

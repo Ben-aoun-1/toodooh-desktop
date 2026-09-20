@@ -2,12 +2,14 @@
   "name": "toodooh-flasher",
   "version": "2.0.0",
   "description": "Flash and provision Toodooh PAX Counters (ESP32) over USB — no toolchain required",
+  "author": "Toodooh",
   "main": "./out/main/index.js",
   "scripts": {
     "dev": "electron-vite dev",
     "build": "electron-vite build",
     "preview": "electron-vite preview",
-    "package": "electron-vite build && electron-builder --win portable"
+    "package": "electron-vite build && electron-builder --win portable",
+    "test": "node scripts/test-provision-log.mjs && node scripts/test-provision-openwifi.mjs"
   },
   "dependencies": {
     "@serialport/parser-readline": "^12.0.0",
@@ -53,7 +55,9 @@
       }
     ],
     "files": [
-      "out/**/*"
+      "out/**/*",
+      "!**/build/Release/**",
+      "!**/build/Debug/**"
     ]
   }
 }

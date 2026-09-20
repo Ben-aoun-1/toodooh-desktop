@@ -173,6 +173,7 @@ body {
   border-radius: var(--tf-radius-sm);
   color: var(--tf-text);
   font-size: 13px;
+  line-height: 1.4;
   outline: none;
   transition: border-color 0.15s;
 
@@ -183,6 +184,29 @@ body {
   &::placeholder {
     color: var(--tf-text-muted);
     opacity: 0.5;
+  }
+
+  &:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+  }
+}
+
+.tf-check {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 8px;
+  font-size: 12px;
+  color: var(--tf-text);
+  cursor: pointer;
+  user-select: none;
+
+  input {
+    width: 14px;
+    height: 14px;
+    accent-color: var(--tf-primary);
+    cursor: pointer;
   }
 }
 
