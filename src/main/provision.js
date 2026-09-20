@@ -32,17 +32,82 @@ export function buildSetWifiLine(ssid, pass, agent) {
   return `SET_WIFI\t${fields.join('\t')}\n`
 }
 
+// Interprets the board's serial log during provisioning. `feed(line)` returns
+// true once the device is fully online.
+//
+// Only the boot that runs the NEW credentials counts. The first boot after a
+// flash still runs whatever NVS held before (flashing doesn't erase it) and
+// only reads SET_WIFI after WiFi.begin(); it saves, acks WIFI_SAVED and
+// restarts — and that old attempt can still log AUTH_FAIL (or even get online)
+// after the ack. So: WIFI_SAVED, then the next "WiFi connecting to SSID" line
+// marks the new boot; everything before it is ignored.
+//
+// WiFi state comes from the WIFI_* tokens of firmware patch 0006, never from
+// "Attempting to connect to": MQTT_SERVER is an IP literal, so the firmware
+// printed that with no network at all.
+export function createProvisionTracker({ onPhase = () => {} } = {}) {
+  const result = { saved: false, wifiConnected: false, mqttConnected: false, authFail: false, noIp: false }
+  let live = false
+
+  const feed = (l) => {
+    if (l.includes('WIFI_SAVED')) {
+      result.saved = true
+      live = false
+      return false
+    }
+    if (!live) {
+      if (result.saved && l.includes('WiFi connecting to SSID')) {
+        live = true
+        onPhase('connecting')
+      }
+      return false
+    }
+    if (l.includes('WIFI_GOT_IP')) {
+      // An IP proves the password was accepted.
+      Object.assign(result, { wifiConnected: true, noIp: false, authFail: false })
+    } else if (l.includes('WIFI_LOST_IP')) {
+      result.wifiConnected = false
+    } else if (l.includes('WIFI_NO_IP')) {
+      // Associated, so the password was accepted — the router gave no address.
+      Object.assign(result, { noIp: true, authFail: false })
+    } else if (l.includes('Reason: 202') || l.includes('AUTH_FAIL')) {
+      result.authFail = true
+    } else if (l.includes('MQTT server connected')) {
+      Object.assign(result, { mqttConnected: true, wifiConnected: true })
+      return true
+    }
+    return false
+  }
+
+  return { result, feed }
+}
+
+// Turn a provisioning result into what the UI shows: the final stepper phase,
+// plus success/online/error for the result banner.
+export function classifyProvisioning(res) {
+  if (res.mqttConnected) return { phase: 'online', success: true }
+  if (res.wifiConnected) return { phase: 'wifi-only', success: true, online: false }
+  const error =
+    !res.saved ? 'not-saved' :
+    res.authFail ? 'wifi-auth' :
+    res.noIp ? 'wifi-no-ip' :
+    'no-connect'
+  return { phase: 'error', success: false, error }
+}
+
 // Open `comPort`, reboot into the freshly-flashed app, push WiFi credentials
 // (SET_WIFI, tab-delimited so SSID/pass may contain spaces), and watch the
 // serial log to confirm the device joins WiFi and reaches the MQTT broker.
-// Resolves { saved, wifiConnected, mqttConnected }.
+// Resolves the tracker's result: { saved, wifiConnected, mqttConnected,
+// authFail, noIp }.
 export async function provisionWifi(comPort, ssid, pass, agent, {
   onLog = () => {},
+  onPhase = () => {},
   timeoutMs = 90000,
 } = {}) {
   const port = new SerialPort({ path: comPort, baudRate: 115200 })
   const parser = port.pipe(new ReadlineParser({ delimiter: '\n' }))
-  const result = { saved: false, wifiConnected: false, mqttConnected: false }
+  const tracker = createProvisionTracker({ onPhase })
 
   return await new Promise((resolve, reject) => {
     let settled = false
@@ -51,20 +116,14 @@ export async function provisionWifi(comPort, ssid, pass, agent, {
       settled = true
       clearTimeout(timer)
       try { await new Promise((r) => port.close(r)) } catch {}
-      resolve(result)
+      resolve(tracker.result)
     }
     const timer = setTimeout(finish, timeoutMs)
 
     parser.on('data', (line) => {
       const l = String(line).trim()
       if (l) onLog(l)
-      if (l.includes('WIFI_SAVED')) result.saved = true
-      if (l.includes('Attempting to connect to')) result.wifiConnected = true
-      if (l.includes('Reason: 202') || l.includes('AUTH_FAIL')) result.authFail = true
-      if (l.includes('MQTT server connected')) {
-        result.mqttConnected = true
-        finish() // fully online — stop early
-      }
+      if (tracker.feed(l)) finish() // fully online — stop early
     })
 
     port.on('open', async () => {

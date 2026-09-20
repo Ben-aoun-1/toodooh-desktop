@@ -53,9 +53,12 @@ function startFakeDevice(onParsed) {
         const parsed = parseSetWifi(line)
         if (parsed) {
           onParsed(parsed)
-          // Same acks the firmware emits, so provisionWifi can resolve.
+          // Same sequence the firmware emits: ack, restart onto the new
+          // credentials, join, get a lease, reach the broker.
           port.write('WIFI_SAVED\n')
-          setTimeout(() => port.write(`Attempting to connect to ${parsed.ssid}\n`), 150)
+          const open = parsed.pass ? 0 : 1
+          setTimeout(() => port.write(`I (1103) src/mqttclient.cpp: WiFi connecting to SSID: ${parsed.ssid} (provisioned=1, open=${open})\n`), 100)
+          setTimeout(() => port.write('I (2911) src/mqttclient.cpp: WIFI_GOT_IP ip=192.168.1.23 gw=192.168.1.1\n'), 200)
           setTimeout(() => port.write('MQTT server connected, subscribing...\n'), 300)
         }
         line = ''

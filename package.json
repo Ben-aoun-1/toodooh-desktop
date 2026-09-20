@@ -9,7 +9,7 @@
     "build": "electron-vite build",
     "preview": "electron-vite preview",
     "package": "electron-vite build && electron-builder --win portable",
-    "test": "node scripts/test-provision-openwifi.mjs"
+    "test": "node scripts/test-provision-log.mjs && node scripts/test-provision-openwifi.mjs"
   },
   "dependencies": {
     "@serialport/parser-readline": "^12.0.0",

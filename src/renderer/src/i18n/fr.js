@@ -49,6 +49,8 @@ export const t = {
     error: 'Échec',
     wifiAuth: 'Mot de passe WiFi refusé.',
     noConnect: 'Connexion WiFi impossible. Vérifiez le réseau et réessayez.',
+    wifiNoIp: "La carte a rejoint le WiFi (mot de passe accepté), mais le routeur ne lui a attribué aucune adresse IP. Vérifiez sur le routeur le filtrage d'adresses MAC, la limite d'appareils ou une page de connexion, ou essayez avec un partage de connexion.",
+    notSaved: "La carte n'a pas confirmé la réception des identifiants WiFi. Débranchez-la, rebranchez-la et réessayez.",
   },
   result: {
     onlineTitle: 'Appareil en ligne ✓',

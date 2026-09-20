@@ -160,6 +160,8 @@ function ResultBanner({ result }) {
   }
   const msg =
     result.error === 'wifi-auth' ? t.status.wifiAuth :
+    result.error === 'wifi-no-ip' ? t.status.wifiNoIp :
+    result.error === 'not-saved' ? t.status.notSaved :
     result.error === 'no-connect' ? t.status.noConnect :
     result.error
   return (
