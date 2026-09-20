@@ -61,7 +61,7 @@ WiFi et visible sur la plateforme.
 | Aucun port COM dans la liste | Pilote CH9102 absent | Installer le pilote (section 1), rebrancher la carte |
 | « Mot de passe WiFi refusé » | Mauvais mot de passe WiFi | Vérifier le mot de passe et réessayer |
 | « Mot de passe WiFi refusé » sur un réseau **sans** mot de passe | Case « Réseau ouvert » non cochée | Cocher « Réseau ouvert (sans mot de passe) » et reflasher |
-| Reste sur « Connexion », n'arrive pas « En ligne » | Réseau sans accès Internet, ou réseau 5 GHz | Utiliser un réseau 2,4 GHz avec accès Internet |
+| Reste sur « Analyse puis connexion », n'arrive pas « En ligne » | Réseau sans accès Internet, ou réseau 5 GHz | Utiliser un réseau 2,4 GHz avec accès Internet |
 | « …le routeur ne lui a attribué aucune adresse IP » | Le mot de passe est bon, mais le routeur refuse la carte (filtrage MAC, nombre d'appareils atteint, page de connexion) | Autoriser la carte sur le routeur, ou tester avec un partage de connexion pour confirmer que la carte fonctionne |
 | « Windows a protégé votre PC » | Application non signée | Informations complémentaires → Exécuter quand même |
 

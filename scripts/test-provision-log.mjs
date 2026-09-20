@@ -94,7 +94,7 @@ r = run([...BOOT1_OLD_CREDS, ...BOOT2_START, ...GOT_IP_0006, ...MQTT_OK, 'traili
 check('online: verdict', r.verdict, { success: true })
 check('online: stepper ends on online', r.phase, 'online')
 check('online: stops at the MQTT line', r.doneAt, BOOT1_OLD_CREDS.length + BOOT2_START.length + GOT_IP_0006.length)
-check('online: "connecting" announced once, on the new boot', r.phases, ['connecting'])
+check('online: "connecting" announced once, at WIFI_SAVED (before the restart into the new boot)', r.phases, ['connecting'])
 
 r = run([...BOOT1_OLD_CREDS, ...BOOT2_START, ...GOT_IP_0006, ...MQTT_DOWN])
 check('IP but broker unreachable: WiFi-only', r.verdict, { success: true, online: false })
@@ -112,6 +112,7 @@ check('online on the OLD credentials does not stop early', r.doneAt, -1)
 
 r = run([...BOOT2_START, ...GOT_IP_0006, ...MQTT_OK])
 check('no WIFI_SAVED ack: credentials not stored', r.verdict, { success: false, error: 'not-saved' })
+check('no WIFI_SAVED ack: no phase is announced either', r.phases, [])
 
 // Firmware 0007 boots into the scan window first: the WiFi lines only appear
 // ~60 s later, after libpax releases the radio. Nothing in between may be
@@ -130,7 +131,7 @@ const BOOT2_SCAN_FIRST = [
 ]
 r = run([...BOOT1_OLD_CREDS, ...BOOT2_SCAN_FIRST, ...GOT_IP_0006, ...MQTT_OK])
 check('0007 scan-then-uplink boot: scan-window lines are not mistaken for WiFi state', r.verdict, { success: true })
-check('0007 scan-then-uplink boot: "connecting" fires on the post-scan WiFi line only', r.phases, ['connecting'])
+check('0007 scan-then-uplink boot: "connecting" fires once, at WIFI_SAVED, before the ~60 s scan window starts', r.phases, ['connecting'])
 
 check('provisioning waits out the 60 s scan window', DEFAULT_PROVISION_TIMEOUT_MS, 150000)
 

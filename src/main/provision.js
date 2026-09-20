@@ -58,12 +58,15 @@ export function createProvisionTracker({ onPhase = () => {} } = {}) {
     if (l.includes('WIFI_SAVED')) {
       result.saved = true
       live = false
+      // The board restarts here and spends its first ~60 s sniffing before it
+      // may touch the radio for the uplink, so this — not the much later
+      // "WiFi connecting to SSID" line — is when the installer starts waiting.
+      onPhase('connecting')
       return false
     }
     if (!live) {
       if (result.saved && l.includes('WiFi connecting to SSID')) {
         live = true
-        onPhase('connecting')
       }
       return false
     }
