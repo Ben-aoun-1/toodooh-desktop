@@ -45,7 +45,9 @@ Redémarrez l'ordinateur si Windows le demande.
    installe le compteur et il est envoyé à la plateforme.
 5. Cliquez sur **Flasher**.
 6. Suivez les étapes :
-   **Flashage → Configuration WiFi → Connexion → Appareil en ligne ✓**
+   **Flashage → Configuration WiFi → Analyse puis connexion → Appareil en ligne ✓**
+   La carte analyse les réseaux WiFi et Bluetooth pendant une minute avant de
+   se connecter : comptez environ **2 minutes** au total après le flashage.
 
 Quand « Appareil en ligne ✓ » s'affiche, la carte est flashée, connectée au
 WiFi et visible sur la plateforme.

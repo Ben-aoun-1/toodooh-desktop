@@ -9,7 +9,7 @@
 //     the SET_WIFI restart) blamed on the password the user just typed.
 //
 // Usage: node scripts/test-provision-log.mjs
-import { createProvisionTracker, classifyProvisioning } from '../src/main/provision.js'
+import { createProvisionTracker, classifyProvisioning, DEFAULT_PROVISION_TIMEOUT_MS } from '../src/main/provision.js'
 
 let failures = 0
 const check = (name, actual, expected) => {
@@ -112,6 +112,27 @@ check('online on the OLD credentials does not stop early', r.doneAt, -1)
 
 r = run([...BOOT2_START, ...GOT_IP_0006, ...MQTT_OK])
 check('no WIFI_SAVED ack: credentials not stored', r.verdict, { success: false, error: 'not-saved' })
+
+// Firmware 0007 boots into the scan window first: the WiFi lines only appear
+// ~60 s later, after libpax releases the radio. Nothing in between may be
+// mistaken for the live boot's WiFi state.
+const BOOT2_SCAN_FIRST = [
+  'ets Jun  8 2016 00:22:57',
+  'rst:0xc (SW_CPU_RESET),boot:0x13 (SPI_FAST_FLASH_BOOT)',
+  'I (36) src/main.cpp: Starting paxcounter_c6cdd7a8 v3.6.2 (runmode=1 / restarts=1)',
+  'I (110) src/main.cpp: WIFISCAN: on',
+  'I (113) src/main.cpp: BLESCAN: on',
+  'I (1048) .pio/libdeps/usb/libpax/lib/libpax/blescan.cpp: Bluetooth scanner started',
+  'I (1106) src/mqttclient.cpp: MQTT send queue created, size 510 Bytes',
+  'I (61150) libpax: Stopping libpax.',
+  'I (61203) src/mqttclient.cpp: WiFi connecting to SSID: CAFE-WIFI (provisioned=1, open=0)',
+  'I (61210) src/mqttclient.cpp: Starting MQTTloop...',
+]
+r = run([...BOOT1_OLD_CREDS, ...BOOT2_SCAN_FIRST, ...GOT_IP_0006, ...MQTT_OK])
+check('0007 scan-then-uplink boot: online', r.verdict, { success: true })
+check('0007 scan-then-uplink boot: "connecting" announced once, after the scan', r.phases, ['connecting'])
+
+check('provisioning waits out the 60 s scan window', DEFAULT_PROVISION_TIMEOUT_MS, 150000)
 
 console.log(failures ? `\n${failures} check(s) FAILED` : '\nAll checks passed')
 process.exit(failures ? 1 : 0)

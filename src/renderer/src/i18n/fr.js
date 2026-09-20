@@ -36,7 +36,7 @@ export const t = {
   steps: {
     flashing: 'Flashage',
     provisioning: 'Configuration WiFi',
-    connecting: 'Connexion',
+    connecting: 'Analyse puis connexion (~2 min)',
     online: 'En ligne',
   },
   status: {

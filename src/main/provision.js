@@ -45,6 +45,11 @@ export function buildSetWifiLine(ssid, pass, agent) {
 // WiFi state comes from the WIFI_* tokens of firmware patch 0006, never from
 // "Attempting to connect to": MQTT_SERVER is an IP literal, so the firmware
 // printed that with no network at all.
+// Firmware 0007 sniffs BLE + WiFi for a full 60 s window before it may touch
+// the radio for the uplink, so provisioning takes ~100 s: 60 s scan, then
+// connect + MQTT. 150 s leaves room for a slow DHCP without giving up early.
+export const DEFAULT_PROVISION_TIMEOUT_MS = 150000
+
 export function createProvisionTracker({ onPhase = () => {} } = {}) {
   const result = { saved: false, wifiConnected: false, mqttConnected: false, authFail: false, noIp: false }
   let live = false
@@ -103,7 +108,7 @@ export function classifyProvisioning(res) {
 export async function provisionWifi(comPort, ssid, pass, agent, {
   onLog = () => {},
   onPhase = () => {},
-  timeoutMs = 90000,
+  timeoutMs = DEFAULT_PROVISION_TIMEOUT_MS,
 } = {}) {
   const port = new SerialPort({ path: comPort, baudRate: 115200 })
   const parser = port.pipe(new ReadlineParser({ delimiter: '\n' }))
