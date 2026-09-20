@@ -13,7 +13,7 @@ import { existsSync, mkdtempSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import path from 'node:path'
 import { SerialPort } from 'serialport'
-import { provisionWifi, buildSetWifiLine } from '../src/main/provision.js'
+import { provisionWifi, buildSetWifiLine, DEFAULT_PROVISION_TIMEOUT_MS } from '../src/main/provision.js'
 
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms))
 const dir = mkdtempSync(path.join(tmpdir(), 'tdh-pty-'))
@@ -104,6 +104,31 @@ if (!process.env.SKIP_SERIAL) {
       { ssid: 'Cafe des Sports', pass: '', agent: 'AGENT-007' })
     await runCase('OPEN network, no agent', { ssid: 'Aeroport Free WiFi', pass: '', agent: '' },
       { ssid: 'Aeroport Free WiFi', pass: '', agent: '' })
+
+    // The default timeout is the only thing standing between an installer and a
+    // board that now reports ~100 s after the restart, so it must be the real one
+    // — a literal creeping back into the signature would not fail any other check.
+    // Capture the delay provisionWifi schedules rather than waiting it out.
+    async function checkDefaultTimeoutWired() {
+      const device = startFakeDevice(() => {})
+      await new Promise((r) => device.on('open', r))
+      const realSetTimeout = globalThis.setTimeout
+      const delays = []
+      globalThis.setTimeout = (fn, ms, ...rest) => {
+        delays.push(ms)
+        return realSetTimeout(fn, ms, ...rest)
+      }
+      try {
+        await provisionWifi(HOST, 'Cafe des Sports', 'p@ss word', 'AGENT-007', { onLog: () => {} })
+      } finally {
+        globalThis.setTimeout = realSetTimeout
+        await new Promise((r) => device.close(r))
+      }
+      check('provisionWifi with no timeoutMs schedules the real provisioning timeout',
+        delays.includes(DEFAULT_PROVISION_TIMEOUT_MS), true)
+    }
+
+    await checkDefaultTimeoutWired()
   } else {
     console.log('FAIL  virtual serial pair never appeared')
     failures++

@@ -129,8 +129,8 @@ const BOOT2_SCAN_FIRST = [
   'I (61210) src/mqttclient.cpp: Starting MQTTloop...',
 ]
 r = run([...BOOT1_OLD_CREDS, ...BOOT2_SCAN_FIRST, ...GOT_IP_0006, ...MQTT_OK])
-check('0007 scan-then-uplink boot: online', r.verdict, { success: true })
-check('0007 scan-then-uplink boot: "connecting" announced once, after the scan', r.phases, ['connecting'])
+check('0007 scan-then-uplink boot: scan-window lines are not mistaken for WiFi state', r.verdict, { success: true })
+check('0007 scan-then-uplink boot: "connecting" fires on the post-scan WiFi line only', r.phases, ['connecting'])
 
 check('provisioning waits out the 60 s scan window', DEFAULT_PROVISION_TIMEOUT_MS, 150000)
 
