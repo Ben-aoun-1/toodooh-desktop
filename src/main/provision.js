@@ -12,6 +12,12 @@ function setSignals(port, opts) {
 // EN low -> high pulse (IO0 held high) to reboot the chip into the app after
 // esptool leaves it in the ROM bootloader.
 async function resetIntoApp(port) {
+  // Opening the port asserts DTR+RTS. On a chip's built-in USB-Serial/JTAG
+  // (S3/C3/C6), DTR still high while the RTS reset is released latches the
+  // boot strap low = download mode. Drop both first so DTR is low before the
+  // pulse; on a USB-UART bridge this is simply "idle".
+  await setSignals(port, { dtr: false, rts: false })
+  await sleep(100)
   await setSignals(port, { dtr: false, rts: true })
   await sleep(120)
   await setSignals(port, { dtr: false, rts: false })
@@ -83,6 +89,10 @@ export function createProvisionTracker({ onPhase = () => {} } = {}) {
     } else if (l.includes('MQTT server connected')) {
       Object.assign(result, { mqttConnected: true, wifiConnected: true })
       return true
+    } else if (l.includes('MQTT_AUTH_REFUSED')) {
+      // Online, but the firmware carries the wrong broker password — final.
+      Object.assign(result, { mqttAuthRefused: true, wifiConnected: true })
+      return true
     }
     return false
   }
@@ -94,6 +104,7 @@ export function createProvisionTracker({ onPhase = () => {} } = {}) {
 // plus success/online/error for the result banner.
 export function classifyProvisioning(res) {
   if (res.mqttConnected) return { phase: 'online', success: true }
+  if (res.mqttAuthRefused) return { phase: 'error', success: false, error: 'mqtt-auth' }
   if (res.wifiConnected) return { phase: 'wifi-only', success: true, online: false }
   const error =
     !res.saved ? 'not-saved' :

@@ -1,6 +1,6 @@
 import { BrowserWindow } from 'electron'
 import { listPorts, openSerialMonitor, closeSerialMonitor } from './serial-manager'
-import { flashFirmware, getManifest } from './flasher'
+import { flashFirmware, getManifest, supportedChips } from './flasher'
 import { provisionWifi, classifyProvisioning } from './provision'
 
 export function registerIpcHandlers(ipcMain) {
@@ -11,7 +11,7 @@ export function registerIpcHandlers(ipcMain) {
   ipcMain.handle('get-firmware-info', async () => {
     try {
       const m = getManifest()
-      return { ok: true, base: m.base, board: m.board }
+      return { ok: true, base: m.base, chips: supportedChips(m) }
     } catch (err) {
       return { ok: false, error: err.message }
     }
@@ -26,10 +26,11 @@ export function registerIpcHandlers(ipcMain) {
     try {
       progress({ phase: 'flashing', percent: 0 })
       log('Flashing firmware...')
-      await flashFirmware(comPort, {
+      const { chip } = await flashFirmware(comPort, {
         onLog: log,
         onProgress: ({ percent }) => progress({ phase: 'flashing', percent }),
       })
+      log(`Firmware for ${chip} written.`)
 
       progress({ phase: 'provisioning' })
       const res = await provisionWifi(comPort, ssid, pass, agent, {
