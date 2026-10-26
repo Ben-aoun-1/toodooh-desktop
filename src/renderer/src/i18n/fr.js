@@ -21,7 +21,7 @@ export const t = {
     port: 'Port COM',
     portSelect: 'Sélectionner un port…',
     portRefresh: 'Rafraîchir les ports',
-    noBoardHint: 'Aucune carte ESP32 détectée. Branchez la carte en USB. Si rien n’apparaît, installez le pilote CH9102 (dossier drivers/).',
+    noBoardHint: 'Aucune carte ESP32 détectée. Branchez la carte en USB (avec un câble qui transmet les données). Si rien n’apparaît, installez le pilote CH9102 (dossier drivers/).',
     detected: 'détecté',
     flash: 'Flasher',
     flashing: 'Flashage en cours…',
@@ -50,6 +50,7 @@ export const t = {
     wifiAuth: 'Mot de passe WiFi refusé.',
     noConnect: 'Connexion WiFi impossible. Vérifiez le réseau et réessayez.',
     wifiNoIp: "La carte a rejoint le WiFi (mot de passe accepté), mais le routeur ne lui a attribué aucune adresse IP. Vérifiez sur le routeur le filtrage d'adresses MAC, la limite d'appareils ou une page de connexion, ou essayez avec un partage de connexion.",
+    mqttAuth: "La carte est connectée au WiFi, mais le serveur a refusé ses identifiants. Le micrologiciel embarqué n'a pas le bon mot de passe serveur (MQTT) : il faut le recompiler avec le bon mot de passe.",
     notSaved: "La carte n'a pas confirmé la réception des identifiants WiFi. Débranchez-la, rebranchez-la et réessayez.",
   },
   result: {
@@ -75,6 +76,7 @@ export const t = {
   statusbar: {
     firmwareLoading: 'Chargement du micrologiciel…',
     firmwareMissing: 'Micrologiciel introuvable',
-    version: 'Toodooh Flasher v2.0.0',
+    version: 'Toodooh Flasher v3.0.0',
+    chips: 'Puces',
   },
 }

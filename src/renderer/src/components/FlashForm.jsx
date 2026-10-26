@@ -163,6 +163,7 @@ function ResultBanner({ result }) {
     result.error === 'wifi-no-ip' ? t.status.wifiNoIp :
     result.error === 'not-saved' ? t.status.notSaved :
     result.error === 'no-connect' ? t.status.noConnect :
+    result.error === 'mqtt-auth' ? t.status.mqttAuth :
     result.error
   return (
     <div className="tf-alert tf-alert--error">

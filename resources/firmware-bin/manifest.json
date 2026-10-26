@@ -1,13 +1,72 @@
 {
   "name": "Toodooh PAX Counter firmware",
-  "base": "ESP32-Paxcounter v3.6.3 (33fe653) + toodooh patches 0001,0002,0003,0004,0005,0006,0007 (360edd8)",
-  "board": "LilyGO TTGO T3 LoRa32 v1.6.1 (ESP32-PICO-D4, 4MB)",
-  "chip": "esp32",
+  "base": "Toodooh universal v1.0.0",
+  "version": "1.0.0",
   "flashBaud": 460800,
-  "files": [
-    { "address": "0x1000",  "path": "bootloader.bin" },
-    { "address": "0x8000",  "path": "partitions.bin" },
-    { "address": "0xe000",  "path": "boot_app0.bin" },
-    { "address": "0x10000", "path": "firmware.bin" }
-  ]
+  "targets": {
+    "esp32": {
+      "files": [
+        {
+          "address": "0x1000",
+          "path": "esp32/bootloader.bin"
+        },
+        {
+          "address": "0x8000",
+          "path": "esp32/partitions.bin"
+        },
+        {
+          "address": "0x10000",
+          "path": "esp32/firmware.bin"
+        }
+      ]
+    },
+    "esp32s3": {
+      "files": [
+        {
+          "address": "0x0",
+          "path": "esp32s3/bootloader.bin"
+        },
+        {
+          "address": "0x8000",
+          "path": "esp32s3/partitions.bin"
+        },
+        {
+          "address": "0x10000",
+          "path": "esp32s3/firmware.bin"
+        }
+      ]
+    },
+    "esp32c3": {
+      "files": [
+        {
+          "address": "0x0",
+          "path": "esp32c3/bootloader.bin"
+        },
+        {
+          "address": "0x8000",
+          "path": "esp32c3/partitions.bin"
+        },
+        {
+          "address": "0x10000",
+          "path": "esp32c3/firmware.bin"
+        }
+      ]
+    },
+    "esp32c6": {
+      "files": [
+        {
+          "address": "0x0",
+          "path": "esp32c6/bootloader.bin"
+        },
+        {
+          "address": "0x8000",
+          "path": "esp32c6/partitions.bin"
+        },
+        {
+          "address": "0x10000",
+          "path": "esp32c6/firmware.bin"
+        }
+      ]
+    }
+  }
 }

@@ -18,6 +18,11 @@ export default function StatusBar({ firmware }) {
             ? firmware.base
             : t.statusbar.firmwareMissing}
       </div>
+      {ok && firmware.chips && (
+        <div className="tf-statusbar__item">
+          {t.statusbar.chips} : {firmware.chips.map((c) => c.toUpperCase().replace('ESP32', 'ESP32-').replace(/-$/, '')).join(', ')}
+        </div>
+      )}
       <div className="tf-statusbar__item">{t.statusbar.version}</div>
     </footer>
   )
